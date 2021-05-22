@@ -1,0 +1,75 @@
+Description of internal commands:
+1. cd: implements -L,-P
+	cd .., cd ~, cd -P makes you return to home direcory
+	cd takes you to the home directory
+	cd -L [file/directory] (default) is same as cd [file/directory]
+	Errors are handle by checking the value of errno, whose value
+	depends on execution of chdir.Appropriate messages are shown
+	based on errno.
+
+2. pwd: implements -L,-P,-help
+	pwd -P resolves the symbolic linking and tells you the home directory
+	pwd -L default for pwd. pwd prints the present working directory.
+	Based on the execution of getcwd and getenv, the values of errno is set.
+	Using the values, appropriate message is shown and handled.
+
+3. echo: implements -n and -E
+	echo [arguemnt] displays the arguement.
+	echo takes in everything as arguement in front of it unless it is
+	-n or -E, for which whatever is in front of it is taken as arguement.
+
+4. history: implements -c and -s
+	history is stored across all sessions.If the history file is being unable to access, then perror dispays appropraite output to the STDOUT,  based on the value of errno.
+	history [num] displays the last num entries.
+
+5.exit: exits the shell
+
+
+Description of external commands:
+1. ls: implements -a,-1
+	ls displays the contents of directories except files starting with '.' and '..'. Using flag -a displays those files too. Using -1 displays the file in a row. Appropraite messages are displayed and cases handled based on the value of errno, whose value depending on scandir().
+
+2. cat: implements -n,-E
+	cat [filename] displays the contents of the file on STDOUT.Using flag -n, numbers each line and using -E prints '$' in front of each line.
+	Appropriate messages are shown and errors dealt based on the existence of the file passed in the arguements.
+
+3.	mkdir: implements -v, -p
+	mkdir [dirname] makes a directory named dirname in pwd,if it does not exists already.Using -v, appropriate messages are shown based on execution of mkdir.Using -p, parent directories are also made if they don't exist without displaying any errors.Appropriate messages are shown and errors dealt based on the existence of the file passed in the arguements.
+
+4.	rmdir: implements -v, -d
+	rm [filename] removes the file if it exists.
+	Using -v, appropriate messages are shown based on the execution of the remove. Using -d, if the arguement is directory, then it also is made to delete.Appropriate messages are shown and errors dealt based on the existence of the file passed in the arguements and return values of remove function.
+
+5. date: implements -I,-R
+	-I flag output  date/time  in  ISO  8601 format.
+	-R flag output date and time in RFC 5322 format.  Example: Mon, 14 Aug 2006 02:34:56 -0600
+
+
+Working of the shell:
+For the internal commands the main program has functions to implement those,which are called with appropriate arguements.
+If none of the internal commands are inputted, then a child process is created, in which input is checked for external commands and if it matches, appropriate file of the external command is executed with execv command.Then it is execited while the parent waits for the child to process to execute. The shell runs until the exit command is wriiten. Invalid input is handled and shell does not terminate.
+
+Make sure the files are in appropriate folder, since for the execution of external commands, filename passed is absolute.
+
+Some sample testcases to try:
+cd ..
+cd -L
+cd -P
+pwd
+pwd -P
+history 5
+history -s abc
+echo -n abcdef
+echo hiiii
+exit
+ls 
+ls -1
+cat history.txt
+cat -n history.txt
+mkdir abc/abcde
+rm abc.txt
+rm -d abcde
+date
+date -I
+date -R
+
